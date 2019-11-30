@@ -11,12 +11,12 @@ import android.os.AsyncTask
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 
 
 class FlickrSearchFragment : Fragment() {
     private lateinit var mPhotoRecyclerView: RecyclerView
     private var mItems: List<GalleryItem> = ArrayList()
-    private lateinit var mThumbnailDownloader: ThumbnailDownloader<PhotoHolder>
 
     companion object {
         fun newInstance(): FlickrSearchFragment {
@@ -55,7 +55,7 @@ class FlickrSearchFragment : Fragment() {
 
     private inner class PhotoHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val mItemImageView: ImageView = itemView.findViewById(R.id.item_image_view) as ImageView
+        val mItemImageView: ImageView = itemView.findViewById(R.id.item_image_view) as ImageView
 
         fun bindDrawable(drawable: Drawable) {
             mItemImageView.setImageDrawable(drawable)
@@ -77,7 +77,13 @@ class FlickrSearchFragment : Fragment() {
             val galleryItem = mGalleryItems[position]
             val placeholder = ContextCompat.getDrawable(view?.context!!, R.drawable.loading_spinner)!!
             photoHolder.bindDrawable(placeholder)
-//            mThumbnailDownloader.queueThumbnail(photoHolder, galleryItem.url)
+
+            Glide.with(view!!)
+                .load(galleryItem.url)
+                .centerCrop()
+                .placeholder(R.drawable.loading_spinner)
+                .error(R.drawable.error)
+                .into(photoHolder.mItemImageView)
         }
 
         override fun getItemCount(): Int {

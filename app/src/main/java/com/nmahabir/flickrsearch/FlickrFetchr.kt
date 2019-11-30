@@ -37,36 +37,7 @@ class FlickrFetchr {
         } finally {
             connection.disconnect()
         }
-//        try {
-//            val out = ByteArrayOutputStream()
-//            val input = connection.getInputStream()
-//
-//            if (connection.getResponseCode() !== HttpURLConnection.HTTP_OK) {
-//                throw IOException(
-//                    connection.getResponseMessage() +
-//                            ": with " +
-//                            urlSpec
-//                )
-//            }
-//
-//            var bytesRead = 0
-//            val buffer = ByteArray(1024)
-//            bytesRead = input.read(buffer)
-//            while (bytesRead > 0) {
-//                out.write(buffer, 0, bytesRead)
-//                bytesRead = input.read(buffer)
-//            }
-//            out.close()
-//            return out.toByteArray()
-//        } finally {
-//            connection.disconnect()
-//        }
     }
-
-//    @Throws(IOException::class)
-//    fun getUrlString(urlSpec: String): String {
-//        return getUrlBytes(urlSpec).toString()
-//    }
 
     fun fetchRecentPhotos(): List<GalleryItem> {
         val url = buildUrl(FETCH_RECENTS_METHOD, null)
