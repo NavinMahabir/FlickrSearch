@@ -89,7 +89,7 @@ class FlickrSearchFragment : Fragment() {
 
     private fun updateItems() {
         val query = QueryPreferences.getStoredQuery(activity!!)
-        FetchItemsTask(if (query == "") query else null).execute()
+        FetchItemsTask(if (query != "") query else null).execute()
     }
 
     private fun setupAdapter() {
