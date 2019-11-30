@@ -2,7 +2,6 @@ package com.nmahabir.flickrsearch
 
 import android.net.Uri
 import android.util.Log
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL

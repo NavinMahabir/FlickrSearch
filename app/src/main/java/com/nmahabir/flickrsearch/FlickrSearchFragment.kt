@@ -1,20 +1,21 @@
 package com.nmahabir.flickrsearch
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.os.AsyncTask
 import android.graphics.drawable.Drawable
+import android.util.Log
+import android.view.*
 import android.widget.ImageView
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 
 
 class FlickrSearchFragment : Fragment() {
+    private val TAG = "FlickrSearchFragment"
     private lateinit var mPhotoRecyclerView: RecyclerView
     private var mItems: List<GalleryItem> = ArrayList()
 
@@ -27,6 +28,7 @@ class FlickrSearchFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -40,11 +42,54 @@ class FlickrSearchFragment : Fragment() {
         mPhotoRecyclerView.setLayoutManager(GridLayoutManager(activity, 3))
 
         setupAdapter()
-
-        FetchItemsTask("dogs").execute()
+        updateItems()
 
         return v
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.fragment_flickr_search, menu)
+
+        val searchItem = menu?.findItem(R.id.menu_item_search)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(s: String): Boolean {
+                Log.d(TAG, "QueryTextSubmit: $s")
+                QueryPreferences.setStoredQuery(activity!!, s)
+                updateItems()
+                return true
+            }
+
+            override fun onQueryTextChange(s: String): Boolean {
+                Log.d(TAG, "QueryTextChange: $s")
+                return false
+            }
+        })
+
+        searchView.setOnSearchClickListener(View.OnClickListener {
+            val query = QueryPreferences.getStoredQuery(activity!!)
+            searchView.setQuery(query, false)
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when(item?.itemId) {
+            R.id.menu_item_clear -> {
+                QueryPreferences.setStoredQuery(activity!!, "")
+                updateItems()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+
+        }
+    }
+
+    private fun updateItems() {
+        val query = QueryPreferences.getStoredQuery(activity!!)
+        FetchItemsTask(if (query == "") query else null).execute()
     }
 
     private fun setupAdapter() {
